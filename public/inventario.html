@@ -8,26 +8,41 @@
 </head>
 <body>
     <div class="container">
-        <h2>Agregar Producto</h2>
-        <form id="formulario">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="number" id="cantidad" placeholder="Cantidad" required>
-            <input type="text" id="unidad_medida" placeholder="Unidad de Medida" required>
-            <input type="number" id="costo_unidad" placeholder="Costo por Unidad" step="0.01" required>
-            <input type="number" id="stock_minimo" placeholder="Stock Mínimo" required>
-            <button type="submit">Agregar Producto</button>
-        </form>
+        <section id="acciones">
+            <h2>Inventario Casa Familia Santos</h2>
 
-        <h2>Consumir Producto</h2>
-        <form id="form-consumo">
-            <input type="number" id="id_producto" placeholder="ID del Producto" required>
-            <input type="number" id="cantidad_consumida" placeholder="Cantidad a Consumir" required>
-            <button type="submit">Consumir</button>
-        </form>
-
-        <h2>Inventario</h2>
-        <button id="ver-inventario">Ver Inventario</button>
-
+            <!-- Campo de búsqueda por nombre -->
+            <label for="buscador-nombre">Buscar por nombre:</label>
+            <input type="text" id="buscador-nombre" placeholder="Buscar producto...">
+            
+            <!-- Botón para abrir el formulario de agregar producto -->
+            <button id="btn-agregar-producto">Agregar Producto</button>
+        
+            <!-- Formulario emergente para agregar un producto -->
+            <div id="formulario-agregar" class="formulario-popup">
+                <h3>Agregar Producto</h3>
+                <form id="formulario">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" required>
+                
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" id="cantidad" required>
+                
+                    <label for="unidad_medida">Unidad de Medida:</label>
+                    <input type="text" id="unidad_medida" required>
+                
+                    <label for="costo_unidad">Costo por unidad:</label>
+                    <input type="number" id="costo_unidad" required>
+                
+                    <label for="stock_minimo">Stock mínimo:</label>
+                    <input type="number" id="stock_minimo" required>
+                
+                    <button type="submit">Agregar Producto</button>
+                    <button type="button" id="cerrar-formulario">Cerrar</button>
+                </form>
+            </div>
+        </section>
+       
         <table id="tabla-inventario">
             <thead>
                 <tr>
@@ -37,7 +52,7 @@
                     <th>Unidad</th>
                     <th>Stock Mínimo</th>
                     <th>Alerta</th>
-                    <th>Acciones</th> <!-- Nueva columna para eliminar -->
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody></tbody>

@@ -3,6 +3,8 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const PORT = 3000;
+const jwt = require('jsonwebtoken');
+
 // Crear la app de Express
 const app = express();
 app.use(express.json());
@@ -167,20 +169,18 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    // Buscar al usuario en la base de datos
-    db.query('SELECT * FROM usuarios WHERE usuarios = ?', [username], (err, results) => {
+    db.query('SELECT * FROM usuarios WHERE username = ?', [username], (err, results) => {
         if (err) {
             console.error('Error al obtener el usuario', err);
             return res.status(500).json({ message: 'Error en el proceso de login' });
         }
 
-        const user = results[0]; // Suponiendo que el primer resultado es el usuario
+        const user = results[0];
 
         if (!user) {
             return res.status(400).json({ message: 'Usuario no encontrado' });
         }
 
-        // Comparar la contraseña encriptada con la ingresada
         bcrypt.compare(password, user.password, (err, result) => {
             if (err) {
                 console.error('Error al comparar las contraseñas', err);
@@ -188,16 +188,44 @@ app.post('/login', (req, res) => {
             }
 
             if (result) {
-                // La contraseña es correcta
-                res.json({ success: true, user });
+                // Generar token JWT
+                const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, 'secreto_super_seguro', { expiresIn: '1h' });
+
+                // Enviar respuesta con token, username y role
+                res.json({ success: true, message: 'Inicio de sesión exitoso', token, username: user.username, role: user.role });
             } else {
-                // La contraseña es incorrecta
                 res.json({ success: false, message: 'Credenciales incorrectas' });
             }
         });
     });
 });
 
+function verificarToken(req, res, next) {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(403).json({ message: 'Token requerido' });
+    }
+
+    jwt.verify(token, 'secreto_super_seguro', (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+
+        req.user = decoded; // Guardar datos del usuario en la request
+        next();
+    });
+}
+
+
+
+
+
+
+// Ruta protegida
+app.get('/perfil', verificarToken, (req, res) => {
+    res.json({ message: 'Perfil de usuario', user: req.user });
+});
 
 // Iniciar el servidor
 app.listen(3000, () => {
